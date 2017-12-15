@@ -8,14 +8,23 @@ class WorkerClient:
 	port = '8001'
 
 	def askForWork(self):
-		print 3
 		workFile = requests.get('http://localhost:8001/').json()
-		print 4
-		print workFile
 		if workFile is None:
 			die()
 		else:
+			print workFile
+			sha = workFile['work']
 			treeURL = workFile['tree']
+			token = workFile['token']
+			print sha
+			print treeURL.format(sha)
+			print token
+
+			payload = {'access_token': token}
+
+			responce = requests.get(treeURL.format(sha), params=payload)
+			print responce.status_code
+			print str(responce.headers)
 
 	def doWork(self, message):
 		self.pullCommit(message)

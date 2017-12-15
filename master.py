@@ -13,14 +13,16 @@ jobQueue = Queue.Queue()
 totalWork = 0
 workCompleted = 0
 totalComplexityValue = 0
+accessToken = None
 
 class Server(Resource):
 
 	def get(self):
+		global accessToken
 		repoTreeListURL = 'https://api.github.com/repos/avast-tl/retdec/git/trees/{}'
 		work=jobQueue.get()
 		if work:
-			return {'work': work, 'tree': repoTreeListURL}
+			return {'work': work, 'tree': repoTreeListURL, 'token':accessToken}
 		else:
 			return '', 100
 
@@ -48,9 +50,10 @@ def closeServer():
 def pullRepository():
 	global jobQueue
 	global totalWork
+	global accessToken
 	tokenFile = open('gittoken', 'r')
-	token =  tokenFile.read()
-	payload = {'access_token': token}
+	accessToken =  tokenFile.read()
+	payload = {'access_token': accessToken}
 	resp = requests.get('https://api.github.com/repos/avast-tl/retdec/commits', params=payload)
 	for i in resp.json():
 		print i
