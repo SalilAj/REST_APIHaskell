@@ -2,39 +2,61 @@ import requests
 import socket
 
 token = ''
-class WorkerClient(tokenValue):
+class WorkerClient:
 
 	host = 'localhost'
 	port = '8001'
 
-	def askForWork():
-		workFile = requests.get('http://127.0.0.0:8001/').json()
+	def askForWork(self):
+		print 3
+		workFile = requests.get('http://localhost:8001/').json()
+		print 4
+		print workFile
+		if workFile is None:
+			die()
+		else:
+			treeURL = workFile['tree']
 
-	def doWork(message):
+	def doWork(self, message):
 		self.pullCommit(message)
 		'''call pull commit get commits and calculate complexity'''
 		'''call sendWork with results'''
 
-	def sendWork(result):
+	def sendWork(self, result):
 		sock.connect((self.host, port))
-        sock.sendall('doneWork:%s' % result)
-        sock.close()
+		sock.sendall('doneWork:%s' % result)
+		sock.close()
 
 	def die(self):
+		return False
+
 
 	def pullCommit(shaMessage):
+
+		payload = {
+		'recursive': 'true',
+		'access_token': self.token
+		}
+
+		resp = requests.get('https://api.github.com/repos/avast-tl/retdec/commits/%s.patch' % shaMessage, params=payload)
+		print resp
+		if resp.status_code == 301:
+			redirect_url = resp.headers['location'].split('?')[0]
+			payload = {'access_token': self.token}
+			resp = requests.get(redirect_url, params=payload)
+		return resp.json()['tree']
 
 
 def main():
 
 	tokenFile = open('gittoken', 'r')
 	token =  tokenFile.read()
-	client = WorkerClient(token)
-	while True:
-		client.askForWork()
-			'''die'''
-		'''else'''
-			'''doWork'''
-		'''sendWork'''
+	client = WorkerClient()
+	print 1
+	client.askForWork()
+	'''die'''
+	'''else'''
+	'''doWork'''
+	'''sendWork'''
 
 if __name__ == "__main__": main()

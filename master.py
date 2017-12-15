@@ -13,12 +13,11 @@ jobQueue = Queue.Queue()
 totalWork = 0
 workCompleted = 0
 totalComplexityValue = 0
-repoTreeListURL = 'https://api.github.com/repos/avast-tl/retdec/git/trees/{}'
 
 class Server(Resource):
 
 	def get(self):
-		global repoTreeListURL
+		repoTreeListURL = 'https://api.github.com/repos/avast-tl/retdec/git/trees/{}'
 		work=jobQueue.get()
 		if work:
 			return {'work': work, 'tree': repoTreeListURL}
@@ -63,7 +62,7 @@ def pullRepository():
 if __name__ == "__main__":
 	pullRepository()
 	startTime = time()
-	app.run(host='127.0.0.0', port=8001)
+	app.run(host='localhost', port=8001)
 	endTime = time()
 	TotalRunningTime = endTime - startTime
 
