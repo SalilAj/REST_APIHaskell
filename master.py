@@ -13,13 +13,15 @@ jobQueue = Queue.Queue()
 totalWork = 0
 workCompleted = 0
 totalComplexityValue = 0
+repoTreeListURL = 'https://api.github.com/repos/avast-tl/retdec/git/trees/{}'
 
 class Server(Resource):
 
-	def giveWork(self):
+	def get(self):
+		global repoTreeListURL
 		work=jobQueue.get()
 		if work:
-			return {'work': work}
+			return {'work': work, 'tree': repoTreeListURL}
 		else:
 			return '', 100
 
