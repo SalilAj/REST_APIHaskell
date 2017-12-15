@@ -3,17 +3,18 @@ import Queue
 import socket
 from flask import Flask
 from flask_restful import Resource, Api, request
+from time import time
 
 from flask import Flask
 app = Flask(__name__)
-api.add_resource(Server, '/')
+api = Api(app)
 
 jobQueue = Queue.Queue()
 totalWork = 0
 workCompleted = 0
 totalComplexityValue = 0
 
-class Server(object):
+class Server(Resource):
 
 	def giveWork(self):
 		work=jobQueue.get()
@@ -34,7 +35,13 @@ class Server(object):
 		print averageComplexityValue
 		closeServer()
 
-def closeServer()
+api.add_resource(Server, '/')
+
+def closeServer():
+	func = request.environ.get('werkzeug.server.shutdown')
+	if func is None:
+		raise RuntimeError('Not running with the Werkzeug Server')
+		func()
 
 
 def pullRepository():
@@ -54,8 +61,7 @@ def pullRepository():
 if __name__ == "__main__":
 	pullRepository()
 	startTime = time()
-	app.run(host='0.0.0.0')
+	app.run(host='127.0.0.0', port=8001)
 	endTime = time()
 	TotalRunningTime = endTime - startTime
-	pullRepository()
 
