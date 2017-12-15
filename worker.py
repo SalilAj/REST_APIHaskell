@@ -1,5 +1,9 @@
 import requests
 import socket
+from re import match
+from radon.complexity import SCORE
+from radon.cli.harvest import CCHarvester
+from radon.cli import Config
 
 token = ''
 class WorkerClient:
@@ -22,13 +26,36 @@ class WorkerClient:
 
 			payload = {'access_token': token}
 			responce = requests.get(treeURL.format(sha), params=payload)
-			fileTree = resp.json()['tree']
-			print fileTree
+			fileTree = responce.json()['tree']
 
-	def doWork(self, message):
-		self.pullCommit(message)
-		'''call pull commit get commits and calculate complexity'''
-		'''call sendWork with results'''
+			blobURLs = []
+			for blob in fileTree:
+				if blob['type'] == 'blob':
+					if match('.*\.py', blob['path']):
+						blobURLs.append(blob['url'])
+
+			headers = {'Accept': 'application/vnd.github.v3.raw'}
+
+			for index, url in enumerate(blobURLs):
+				responce = requests.get(url, params=payload, headers=headers)
+
+				with open('./worker1tempfolder/{}.py'.format(index), 'w') as f:
+					f.write(responce.text)
+			print 1
+			self.doWork()
+
+
+
+	def doWork(self):
+		print 3
+		config = Config(exclude='',ignore='venv',order=SCORE,no_assert=True,show_closures=False,min='A',max='F')
+		result = CCHarvester('./worker1tempfolder', config)
+		print 4
+		print result
+		complexity = result._to_dicts()
+		print 5
+		print complexity
+
 
 	def sendWork(self, result):
 		sock.connect((self.host, port))
