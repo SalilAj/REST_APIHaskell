@@ -42,19 +42,30 @@ class WorkerClient:
 				with open('./worker1tempfolder/{}.py'.format(index), 'w') as f:
 					f.write(responce.text)
 			print 1
-			self.doWork()
+			value = self.doWork()
+			print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+			print value
 
 
 
 	def doWork(self):
 		print 3
 		config = Config(exclude='',ignore='venv',order=SCORE,no_assert=True,show_closures=False,min='A',max='F')
-		result = CCHarvester('./worker1tempfolder', config)
+		complexity = CCHarvester('./worker1tempfolder', config)._to_dicts()
 		print 4
-		print result
-		complexity = result._to_dicts()
-		print 5
 		print complexity
+		print 5
+		print complexity.values()
+
+		totalComplexity = 0
+		for doc in complexity.values():
+			docComplexity = 0
+			for codeBlock in doc:
+				docComplexity = docComplexity + codeBlock['complexity']
+
+		totalComplexity = totalComplexity + docComplexity
+		self.deletefiles()
+		return total_cc / len(complexity)
 
 
 	def sendWork(self, result):
