@@ -19,7 +19,7 @@ class Server(Resource):
 
 	def get(self):
 		global accessToken
-		repoTreeListURL = 'https://api.github.com/repos/avast-tl/retdec/git/trees/{}'
+		repoTreeListURL = 'https://api.github.com/repos/xysun/pychat/git/trees/{}'
 		work=jobQueue.get()
 		if work:
 			return {'work': work, 'tree': repoTreeListURL, 'token':accessToken}
@@ -54,7 +54,7 @@ def pullRepository():
 	tokenFile = open('gittoken', 'r')
 	accessToken =  tokenFile.read()
 	payload = {'access_token': accessToken}
-	resp = requests.get('https://api.github.com/repos/avast-tl/retdec/commits', params=payload)
+	resp = requests.get('https://api.github.com/repos/xysun/pychat/commits', params=payload)
 	for i in resp.json():
 		print i
 		print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
@@ -68,4 +68,3 @@ if __name__ == "__main__":
 	app.run(host='localhost', port=8001)
 	endTime = time()
 	TotalRunningTime = endTime - startTime
-

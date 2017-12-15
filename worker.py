@@ -21,10 +21,9 @@ class WorkerClient:
 			print token
 
 			payload = {'access_token': token}
-
 			responce = requests.get(treeURL.format(sha), params=payload)
-			print responce.status_code
-			print str(responce.headers)
+			fileTree = resp.json()['tree']
+			print fileTree
 
 	def doWork(self, message):
 		self.pullCommit(message)
