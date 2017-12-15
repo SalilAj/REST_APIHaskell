@@ -1,62 +1,61 @@
 import requests
 import Queue
 import socket
+from flask import Flask
+from flask_restful import Resource, Api, request
 
+from flask import Flask
+app = Flask(__name__)
+api.add_resource(Server, '/')
 
 jobQueue = Queue.Queue()
-total_work = 0
+totalWork = 0
 workCompleted = 0
+totalComplexityValue = 0
 
-class TCPServer(object):
+class Server(object):
 
-	host = 'localhost'
+	def giveWork(self):
+		work=jobQueue.get()
+		if work:
+			return {'work': work}
+		else:
+			return '', 100
 
-	def __init__(self, port=None):
-		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.sock.bind((self.host,port))
-
-	def listen(self):
-		global total_work
-		global workCompleted
-		self.sock.listen(5)
-		while True:
-			connection, address = self.sock.accept()
-			print("connected")
-			message = connection.recv(4064)
-			print message
-			print total_work
-			print workCompleted
-			if message == 'needWork':
-				'''pop work from queue and send to worker'''
-			elif message == 'doneWork':
-				'''add result to total complexity'''
-				'''increment work completed'''
-				if workCompleted == total_work:
-					calculateMeanComplexity()
+	def doneWork(self):
+		value = request.form['complexityValue']
+		totalComplexityValue = totalComplexityValue + value
+		workCompleted = workCompleted + 1
+		if workCompleted == totalWork:
+			calculateMeanComplexity()
 
 	def calculateMeanComplexity(self):
-		print 'DONE'
+		averageComplexityValue = totalComplexityValue / totalWork
+		print averageComplexityValue
+		closeServer()
 
+def closeServer()
 
-def main():
-	try:
-		pullRepository()
-		server = TCPServer(8001)
-		server.listen()
-	except socket.error, errorMsg:
-		print "Failed to create a socket" + str(errorMsg)
-	pullRepository()
 
 def pullRepository():
 	global jobQueue
-	global total_work
+	global totalWork
 	tokenFile = open('gittoken', 'r')
 	token =  tokenFile.read()
 	payload = {'access_token': token}
 	resp = requests.get('https://api.github.com/repos/avast-tl/retdec/commits', params=payload)
 	for i in resp.json():
+		print i
+		print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
 		jobQueue.put(i['sha'])
-	total_work = jobQueue.qsize()
+	totalWork = jobQueue.qsize()
 
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+	pullRepository()
+	startTime = time()
+	app.run(host='0.0.0.0')
+	endTime = time()
+	TotalRunningTime = endTime - startTime
+	pullRepository()
+
