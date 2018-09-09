@@ -1,12 +1,6 @@
-# REST_APIHaskell
+# Work Stealing
 
-NOT IN HASKELL its coded in Python
-
-REST API service with a Master worker communication to calculate the cyclomatic complexity of of a python code
-
-Scalable Computing Assignment 2:
-
-Name: Salil Ajgaonkar TCD ID: 17317640
+REST API service with a Master worker communication to calculate the cyclomatic complexity of a python code
 
 How to Run?
 
